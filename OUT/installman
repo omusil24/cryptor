@@ -1,0 +1,51 @@
+#!/bin/bash
+
+getnumberfromfilename()
+{
+  return $(echo "$1" | sed 's/.*\.//')
+}
+getfilename()
+{
+  echo "${1%.*}"
+}
+
+
+INSTALL=1;
+if [ "$1" = "-r" ]; then
+  shift
+  INSTALL=0;
+fi
+
+FileToInstall="$1"
+
+FileName="$FileToInstall"
+echo "$FileName"
+
+if [[ ! "$FileName" =~ .*\.[1-9]$ ]]; then
+  echo "Man file must have name in format *.[1-9]"
+  exit 1
+fi
+
+getnumberfromfilename "$FileName"
+MANNUMBER=$?
+
+
+if [ $INSTALL -eq 1 ]; then
+
+  if [ ! -f "$FileToInstall" ]; then
+    echo "Failed to install man page. File '$FileToInstall' does not exist.".
+    return 1;
+  fi
+else
+  find /usr/local/share/man -type f -name "startmon.*" -exec rm {} \;
+  
+  exit 0
+fi
+
+TARGETDIR="/usr/local/share/man/man$MANNUMBER"
+if [ -d "$TARGETDIR" ]; then
+  mkdir -p "$TARGETDIR"
+fi
+
+cp "$FileToInstall" "$TARGETDIR"
+mandb > /dev/null 2>&1

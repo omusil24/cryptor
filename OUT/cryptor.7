@@ -1,0 +1,52 @@
+.\" Manpage for cryptor.
+.\" Contact honza.glaser@seznam.cz to correct errors or typos.
+
+.TH man 8 "11 Apr 2017" "1.5" "cryptor man page"
+
+.SH NAME
+cryptor \- Allows to encrypt or decrypt file or directories. 
+
+.SH SYNOPSIS
+cryptor [OPTIONS] [FILES / DIRS]
+
+.SH DESCRIPTION
+cryptor is used for encrypting or decrypting file or directory content. 
+AES256 is used for the task. Keys and sensitive data is being overwritten as soon as possible in memory.
+Application uses gpg for the encryption / decryption itself.
+
+.SH OPTIONS
+.TP
+.BR -c " "  
+Encrypts target file(s)
+.TP
+.BR -d " "  
+Decrypts target file(s)
+.TP
+.BR [FILES / DIRS] ", "  
+Space separated files (absolute or relative path) that will be encrypted or decrypted. If a directory is passed, all content of such a directory is encrypted / decrypted recursivelly, ommiting links on any kind, but INCLUDING hidden files.
+.TP
+.BR -v ", " --version ", "  
+Prints version of the application and exits
+
+.SH EXAMPLES
+.TP
+.BR "cryptor -c file1.cpp file2.cpp"
+Encrypts both files file1.cpp file2.cpp
+.TP
+.BR "cryptor -d file1.cpp file2.cpp"
+Decrypts both files file1.cpp file2.cpp
+.TP
+.BR "cryptor -c file1.cpp directory"
+Encrypts file file1.cpp and entirec ontent of directory 'directory' recursivelly
+.TP
+.BR "cryptor -c . ../"
+Encrypts all files recursivelly in current directory and parent directory, but encrypting each file only once, not multiple times
+
+.SH SEE ALSO
+gpg
+
+.SH BUGS
+No known bugs.
+
+.SH AUTHOR
+Jan Glaser (honza.glaser@seznam.cz)

@@ -1,0 +1,4 @@
+g++ -c -pedantic -Wall -g -o src/ArgumentPasser.o src/ArgumentPasser.cpp 
+g++ -c -pedantic -Wall -g -o src/Crypto.o src/Crypto.cpp 
+g++ -c -pedantic -Wall -g -o src/main.o src/main.cpp 
+g++ -o cryptor  src/ArgumentPasser.o  src/Crypto.o  src/main.o -lssl -lcrypto
