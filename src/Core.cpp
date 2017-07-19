@@ -243,8 +243,8 @@ int Core::run(int argc, char** argv)
     cmdOptions cmdLineOptions;
     
     //SimulateArgs(argc, argv, {"--print-all-options"});
-    //SimulateArgs(argc, argv, {"-cr", "--change-names=y", "/root/Desktop/CAH/scripts/cryptor C++/OUT/TOCRYPT/9905bac1fbd114cb94aaf4765b282af6.png"});
-    //SimulateArgs(argc, argv,{"-d", "/root/Desktop/CAH/.WIFI/data.sql.PH"});
+    //SimulateArgs(argc, argv, {"-cr", "--change-names=y", "/root/Desktop/9905bac1fbd114cb94aaf4765b282af6.png"});
+    //SimulateArgs(argc, argv,{"-d", "/root/Desktop/abc.PH"});
     Settings s;
     ArgumentPasser AP;
     if (!AP.ParseArguments(argv, argc, &s, &cmdLineOptions))
