@@ -16,7 +16,9 @@ If you do not want to compile this, the application is compiled in OUT.
 To install without compilation:
 
 $ cd OUT
+
 $ chmod 777 *
+
 $ ./install.sh
 
 [ FOREWORD ]
@@ -49,6 +51,7 @@ $ cd OUT
 here, run 
 
 $ chmod +x ./install.sh
+
 $ ./install.sh
 
 This installs the program to the /usr/bin
