@@ -19,10 +19,16 @@
 #include "Functions.h"
 #include "FileSystem/FileDirEntity.h"
 #include "Crypto/CryptResult/CryptResult.h"
+#include "shred/Shred.h"
+#include "cmdOptions/cmdOptions.h"
 
 
-char Core::VERSION[] = "2.0";
-
+char Core::VERSION[] = "2.2";
+/**
+ * Notes
+ * crypt_string will have undefined behaviour if length of string exceeds max of length of int
+ * 
+ */
 Core::Core() : argc_allocated(0), argv_allocated(nullptr), SimulatedArguments(false)
 {
 }
@@ -112,10 +118,10 @@ inline void Core::printOptionHelp(string&& option, string&& decription) const
     cout << "\t" << Colors::BOLD << option << Colors::RESET << "\t" << decription << endl << endl;
 }
 
-inline int Core::printHelp() const
+inline int Core::printHelp(const cmdOptions* options) const
 {
     cout << "\t\t" << Colors::BOLD << "Man for " << APP_NAME << " (ver. " << VERSION << ")" << Colors::RESET << endl;
-    
+
     cout << endl;
     cout << "This application was written by " << Colors::BOLD << "Jan Glaser" << Colors::RESET << ". Author is not responsible for any damage you cause to anyone using this program." << endl;
     cout << endl;
@@ -127,15 +133,14 @@ inline int Core::printHelp() const
     cout << "\t" << APP_NAME << "  is  used  for  encrypting or decrypting file or directory content. AES256 " <<
             "in CBC mode is used for the task. Keys and sensitive data is being overwritten as soon as possible in " <<
             "memory." << endl << endl;
-    cout << "\t" << "Threads are used for en / de cryption, if the file exceeds size of " << Colors::UNDERLINE << Crypto::FILE_SIZE_THREADS << 
+    cout << "\t" << "Threads are used for en / de cryption, if the file exceeds size of " << Colors::UNDERLINE << Crypto::FILE_SIZE_THREADS <<
             Colors::RESET << " Bytes." << endl;
 
 
     cout << Colors::BOLD << "OPTIONS" << Colors::RESET << endl;
-    printOptionHelp("-c", "Encrypts target file(s) or directories (non recursively)");
-    printOptionHelp("-d", "Decrypts target file(s) or directories (non recursively)");
-    printOptionHelp("-r", "Recursive. Encrypts / decrypts / performs check on content of directory recursively");
-    printOptionHelp("-v", "Verbose. Prints additional output");
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::ENCRYPT), "Encrypts target file(s) or directories (non recursively)");
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::DECRYPT), "Decrypts target file(s) or directories (non recursively)");
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::RECURSIVE), "Recursive. Encrypts / decrypts / performs check on content of directory recursively");
 
     cout << Colors::BOLD << "[FILES/DIRS]" << Colors::RESET << endl;
     cout << "\tSpace  separated  files  (absolute  or relative path) that will be encrypted or " <<
@@ -146,12 +151,22 @@ inline int Core::printHelp() const
     cout << "\t(see " << Colors::UNDERLINE << "ENCRYPTED EXTENSION" << Colors::RESET << ")" << endl << endl;
 
     cout << endl;
-    printOptionHelp("--check", "Checks whether file(s) or directory content is encrypted. Check is done only against the extension of files, not against content.");
-    printOptionHelp("--force", "Encrypts also files that are ending with encrypted extension (" +
+
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::CHANGE_NAMES_Y), "When encrypting file, the file name is also encrypted to the final file. Upon decryption, the original fine name is restored (see " + Colors::UNDERLINE + "EXAMPLES" + Colors::RESET + " for more detailed explanation.");
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::CHANGE_NAMES_N), "This is used by default. When encrypting file, the file name is preserved, only '" + Crypto::ENCRYPTED_EXTENSION_ + "' extension is added.");
+
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::CHECK), "Checks whether file(s) or directory content is encrypted. Check is done only against the extension of files, not against content.");
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::FORCE), "Encrypts also files that are ending with encrypted extension (" +
             Crypto::ENCRYPTED_EXTENSION_ + "), and decrypts (or tries to) also files that do not end with such an extension");
-    printOptionHelp("--find", "Prints all files that do have ." + Crypto::ENCRYPTED_EXTENSION_ + " extension.");
-    printOptionHelp("--test, --tests", "Performs hard coded tests");
-    printOptionHelp("--version", "Prints version and quits");
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::FIND), "Prints all files that do have ." + Crypto::ENCRYPTED_EXTENSION_ + " extension.");
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::HELP), "Shows this help and quits");
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::NO_DELETE), "After encryption or decryption, the original input file is not deleted");
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::NO_THREADS), "Threads will not be used for encryption or decryption of files");
+   
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::PRINT_ALL_OPTIONS), "Prints all available options");
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::TESTS), "Performs hard coded tests");
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::VERSION), "Prints version and quits");
+    printOptionHelp(options->getOptionText(cmdOptions::OPTION_NAME::VERBOSE), "Verbose. Prints additional output");
 
     cout << endl;
     cout << Colors::BOLD << "ENCRYPTION" << Colors::RESET << endl;
@@ -202,10 +217,16 @@ inline int Core::printHelp() const
     cout << "\t\t" << "Decrypts file file1.PH, if it exists (see " << Colors::UNDERLINE << "ENCRYPTED EXTENSION)" << Colors::RESET << endl;
     cout << "\t" << Colors::BOLD << APP_NAME << " -d --force file1.PH file2.cpp" << Colors::RESET << endl;
     cout << "\t\t" << "Decrypts files (or tries to) file1.PH and file2.cpp, if they exist (see " << Colors::UNDERLINE << "ENCRYPTED EXTENSION)" << Colors::RESET << endl;
+    cout << "\t" << Colors::BOLD << APP_NAME << " -c --change-names=y -r ." << Colors::RESET << endl;
+    cout << "\t\t" << "Encrypts all files recursively in current directory (except symbolic links and encrypted files)." << endl <<
+            "Also changes the original file name of each file to a hash. The original filename is encrypted and stored to file. Upon decryption, all filenames will be restored." << endl;
+    cout << "\t" << Colors::BOLD << APP_NAME << " -dr --change-names=n ." << Colors::RESET << endl;
+    cout << "\t\t" << "Decrypts all files recursively in current directory (except symbolic links and un encrypted files)." << endl <<
+            "The option --change-names=n has no effect. If the encrypted file contains encrypted original file name, it will always be restored." << endl;
 
     cout << endl;
     cout << Colors::BOLD << "BUGS" << Colors::RESET << endl;
-    cout << "\t" << "There are no known bugs, yet. If you find one, repot it to github (" << Colors::UNDERLINE << "https://github.com/Horse303/cryptor" << Colors::RESET << ")" << endl;
+    cout << "\t" << "There are no known bugs, yet. If you find one, report it to github (" << Colors::UNDERLINE << "https://github.com/Horse303/cryptor" << Colors::RESET << ")" << endl;
 
     cout << endl;
     return 0;
@@ -218,26 +239,34 @@ inline int Core::printVersion() const
 }
 
 int Core::run(int argc, char** argv)
-{   
-    //Crypto Ctest(Settings());
-    //std::thread* t(&Crypto::DoNothing, &Ctest);
+{
+    cmdOptions cmdLineOptions;
     
-    
-    //SimulateArgs(argc, argv, {"-cr", "TOCRYPT/.dial"});
-
+    //SimulateArgs(argc, argv, {"--print-all-options"});
+    //SimulateArgs(argc, argv, {"-cr", "--change-names=y", "/root/Desktop/CAH/scripts/cryptor C++/OUT/TOCRYPT/9905bac1fbd114cb94aaf4765b282af6.png"});
+    //SimulateArgs(argc, argv,{"-d", "/root/Desktop/CAH/.WIFI/data.sql.PH"});
     Settings s;
     ArgumentPasser AP;
-    if (!AP.ParseArguments(argv, argc, &s))
+    if (!AP.ParseArguments(argv, argc, &s, &cmdLineOptions))
         return 1;
 
     if (s.ExitProgram())
         return s.ExitCode();
     else if (s.runTests)
-        return RunTests(getfullexepath(argv[0]), s);
+    {
+        string abs_p;
+        Functions::getFileDirAbsolutePath(argv[0], abs_p);
+        return RunTests(Functions::GetFileParentDir(abs_p), s);
+    }
+    else if(s.printAllOptions)
+    {
+        cout << cmdLineOptions.getAllOptionTextString() << endl;
+        return 0;
+    }
     else if (s.printVersion)
         return printVersion();
     else if (s.printHelp)
-        return printHelp();
+        return printHelp(&cmdLineOptions);
 
     if (s.GetFilesOrDirsToEncryptDecrypt()->size() == 0)
     {
@@ -246,6 +275,12 @@ int Core::run(int argc, char** argv)
     }
 
     Crypto C(s);
+    /*C.SetEncryptionKey("key");
+    string enc = C.crypt_string("some text", Crypto::ENRYPT_DECRYPT::ENC, new CryptResult());
+    cout << C.crypt_string(enc, Crypto::ENRYPT_DECRYPT::DE, new CryptResult()) << endl;
+    
+    assert(false);
+     */
     if (!s.CheckForUnEncryptedFiles && !s.find_encrypted)
     {
         if (!s.encrypt_or_decrypt_option_found)
@@ -253,7 +288,7 @@ int Core::run(int argc, char** argv)
             ConsoleOutput::print("No -c or -d option specified. Quit.", ConsoleOutput::ERROR);
             return 1;
         }
-        
+
         //if we want to just see files that are not encrypted, no key and setup of encryption is needed
         string key = "";
         if (!GetEncryptionKey(key))
@@ -265,17 +300,17 @@ int Core::run(int argc, char** argv)
 
     //get the files and dirs from command line, and all files according to settings and filters (extensions, recursivity)
     FileSystem FS;
-    
-    if (s.verbose)
-            ConsoleOutput::print("Preparing list of files to work with ...", ConsoleOutput::OK);
 
-    
+    if (s.verbose)
+        ConsoleOutput::print("Preparing list of files to work with ...", ConsoleOutput::OK);
+
+
     auto Files = FS.FindAllFiles(s);
 
     //If checking only for un encrypted or encrypted files, all was printed in the FS.FindAllFiles
-    if (s.CheckForUnEncryptedFiles || s.find_encrypted)        
+    if (s.CheckForUnEncryptedFiles || s.find_encrypted)
         return 0;
-    
+
 
     size_t total_files = Files.size();
 
@@ -310,7 +345,7 @@ int Core::run(int argc, char** argv)
     {
         auto ent = i->second;
         string path = ent->getAbsPath();
-        
+
         CryptResult result_info;
         if (s.encrypt)
         {
@@ -336,15 +371,18 @@ int Core::run(int argc, char** argv)
 
         if (!result_info.runningInThread)
         {//we have result already
-            if(result_info.getResult() == Crypto::CRYPT_RESULT::OK)
+            if (result_info.getResult() == Crypto::CRYPT_RESULT::OK)
                 SucessfullyProcessed++;
             else
                 break;
         }
     }
+
+    //MAKE SURE, VARIABLE [Files] EXISTS STILL UNTIL ALL THREADS FINISH, SINCE THEZ CONTAIN REFERENCES TO CONTENT
+    //OF THE ARRAY
     //wait for threads to finish
     C.WaitForFinish(&SucessfullyProcessed);
-    
+
     if (s.encrypt)
         ConsoleOutput::print("Successfully encrypted [ " + to_string(SucessfullyProcessed) + " / " + to_string(total_files) + "] files", ConsoleOutput::OK, " OK ");
     else

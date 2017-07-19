@@ -18,13 +18,15 @@ struct Settings {
     bool decrypt() const;
 
     const unordered_set<string>* GetFilesOrDirsToEncryptDecrypt() const;
-
+    
     Settings& operator=(const Settings& s) = delete;
 
     void SetExitProgram_And_ExitCode(int exitcode);
     int ExitCode() const;
     bool ExitProgram() const;
 
+    bool ChangeFileNames;
+    bool ChangeFileNames_option_found;
     bool CheckForUnEncryptedFiles; /**< Whether application should look for any file that is not ecrypted and print it. */
     bool encrypt; /**< Whether files should be encrypted or decrypted */
     bool EncryptAllExtensions; /**< Whether even files ending with encrypted extension shall be encrypted*/
@@ -39,6 +41,8 @@ private:
 public:
     bool find_encrypted;
     bool no_delete; /**< Whether encrypted / decrypted file (original) should not be deleted*/
+    bool no_threads; /**< If so, no threads will be used for enc / de cryption */
+    bool printAllOptions;
     bool printHelp;
     bool printVersion;
     bool recursive;

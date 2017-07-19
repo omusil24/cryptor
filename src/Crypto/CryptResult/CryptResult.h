@@ -37,5 +37,6 @@ struct CryptResult
 private:
     Crypto::CRYPT_RESULT result_private;
 public:
+    string final_filename;
     bool runningInThread;
 };

@@ -59,9 +59,13 @@ const unordered_map<string, FileDirEntity*>& FileSystem::FindAllFiles(const Sett
     {
         string filepath = *it;
         struct stat filedir_struct;
-        if (!Functions::GetFileStat(filepath, filedir_struct))
-            return AllFiles;
-
+        
+        Functions::STAT_RES_ENUM res = Functions::GetFileStat(filepath, filedir_struct);
+        if(res != Functions::STAT_RES_ENUM::OK)
+        {
+            ConsoleOutput::print("Skipping '" + filepath + "'", ConsoleOutput::WARNING);
+            continue; //skip file / entity
+        }   
         if (Functions::isdir(filedir_struct))
         {// traverse the directory. Absolute paths are always returned for files
             //here no check is done for return value
@@ -146,12 +150,15 @@ inline bool FileSystem::GetFilesInDirectory_rec(const string& d, const struct st
             string filepath_w_dir = abspathdir + "/" + string(ent->d_name);
 
             struct stat Entity_statdata;
-            if (!Functions::GetFileStat(filepath_w_dir, Entity_statdata))
+            Functions::STAT_RES_ENUM res = Functions::GetFileStat(filepath_w_dir, Entity_statdata);
+            if(res == Functions::STAT_RES_ENUM::UNKNOWN_ERR)
             {
                 closedir(dir);
                 return false;
             }
-
+            else if(res != Functions::STAT_RES_ENUM::OK)
+                continue; //skip file / entity
+            
             bool is_dir = Functions::isdir(Entity_statdata);
             if (recursive && is_dir)
             {

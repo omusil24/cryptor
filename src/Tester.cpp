@@ -60,11 +60,11 @@ bool Tester::CreateAndTestFile(uint32_t FileSizeInBytes) const
 
     if (verbose)
         ConsoleOutput::print("Creating file [" + to_string(FileSizeInBytes) + " Bytes]", ConsoleOutput::OK);
-    
+
     FileDirEntity FDE = Createfile(runningdir, buffer, FileSizeInBytes);
     if (verbose)
         ConsoleOutput::print("File '" + FDE.getAbsPath() + "' created", ConsoleOutput::OK);
-    
+
     Crypto C(*settings);
     string key = "abc";
     C.SetEncryptionKey(key);
@@ -73,17 +73,17 @@ bool Tester::CreateAndTestFile(uint32_t FileSizeInBytes) const
     CryptResult res;
     C.encrypt(FDE, &res);
     C.WaitForFinish();
-              
+
     if (res.getResult() != Crypto::CRYPT_RESULT::OK)
     {
         ConsoleOutput::print("Encrypt failed", ConsoleOutput::ERROR);
         return false;
     }
-    
-    FileDirEntity Enc_FDE(FDE.getAbsPath() + "." + C.ENCRYPTED_EXTENSION_);
-    C.decrypt(FDE, &res);
+
+    FileDirEntity Enc_FDE(res.final_filename);
+    C.decrypt(Enc_FDE, &res);
     C.WaitForFinish();
-    
+
     if (res.getResult() != Crypto::CRYPT_RESULT::OK)
     {
         ConsoleOutput::print("Decrypt failed", ConsoleOutput::ERROR);
@@ -91,10 +91,10 @@ bool Tester::CreateAndTestFile(uint32_t FileSizeInBytes) const
     }
 
     FILE* dec = nullptr;
-    dec = fopen(FDE.getAbsPath().c_str(), "rb");
+    dec = fopen(res.final_filename.c_str(), "rb");
     if (!dec)
     {
-        ConsoleOutput::print("Can not open file'" + FDE.getAbsPath() + "'", ConsoleOutput::ERROR);
+        ConsoleOutput::print("Can not open file'" + res.final_filename + "'", ConsoleOutput::ERROR);
         return false;
     }
     char* readbuffer = new char[FileSizeInBytes];
@@ -120,9 +120,17 @@ bool Tester::CreateAndTestFile(uint32_t FileSizeInBytes) const
     }
     fclose(dec);
 
+    //check if original input file name matches the decrypted one. Wich it should
+    if (FDE.getAbsPath() == res.final_filename)
+        ConsoleOutput::print("The input and decrypted filenames match.", ConsoleOutput::OK);
+    else
+    {
+        ConsoleOutput::print("The input and decrypted filenames do not match.", ConsoleOutput::ERROR);
+        testsuccess = false;
+    }
     if (testsuccess)
     {
-        if (remove(FDE.getAbsPath().c_str()) != 0)
+        if (remove(res.final_filename.c_str()) != 0)
         {
             testsuccess = false;
             ConsoleOutput::print("Error deleting test file", ConsoleOutput::ERROR);
@@ -154,7 +162,7 @@ string Tester::GetUniqueFileName() const
 {
 
     uint32_t i = Functions::GetRandomNumber(1);
-    string name = Functions::concat_paths(runningdir, to_string(i) + ".test");
+    string name = Functions::combinePaths(runningdir, to_string(i) + ".test");
 
     uint16_t iterations = 0;
     while (true)
@@ -168,7 +176,7 @@ string Tester::GetUniqueFileName() const
 
 
         i = rand() % numeric_limits<uint16_t>::max() + 1;
-        name = Functions::concat_paths(runningdir, to_string(i) + ".test");
+        name = Functions::combinePaths(runningdir, to_string(i) + ".test");
         iterations++;
 
         if (iterations > 1500)

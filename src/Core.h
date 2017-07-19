@@ -6,6 +6,8 @@
 
 #include "Settings/Settings.h"
 
+class cmdOptions;
+
 using namespace std;
 /**
  * @brief entry point of app
@@ -42,7 +44,7 @@ private:
      * @brief prints help for this application
      * @return value 0
      */
-    inline int printHelp() const;
+    inline int printHelp(const cmdOptions* options) const;
     inline void printOptionHelp(string&& option, string&& decription) const;
     /**
      * @brief prints version for this application

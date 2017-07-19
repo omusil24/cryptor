@@ -8,17 +8,19 @@
 
 using namespace std;
 
+class cmdOptions;
+
 class ArgumentPasser
 {
     public:
         ArgumentPasser();
         virtual ~ArgumentPasser();
-        bool AddOption(string&& opt);
-
+        
     private:
         void badargs() const;
-        bool consumeArgument(string&& arg, Settings* s) const;
-        bool consumeSingleArgument(const string& arg, Settings* s) const;
+        bool consumeArgument(string&& arg, Settings* s, const cmdOptions* options) const;
+        bool consumeSingleArgument(const string& arg, Settings* s, const cmdOptions* options) const;
+        bool found_enc_dec_option(bool encrypt, Settings* s) const;
         void multiple_encrypt_decrypt_options() const;
         void printhelp() const;
     public:
@@ -29,15 +31,12 @@ class ArgumentPasser
          * @param c Pointer to crypto object to modify according to arguments
          * @return 
          */
-        bool ParseArguments(char** args, int argc, Settings* s);
+        bool ParseArguments(char** args, int argc, Settings* s, const cmdOptions* options);
             
     protected:
 
     private:
         inline void print_unrecognized_option(const string& opt) const;
-           
-        unordered_set<string> RecognizedOptions;
-    public:
 };
 
 #endif // ARGUMENTPASSER_H

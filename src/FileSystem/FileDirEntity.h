@@ -20,8 +20,14 @@
 using namespace std;
 
 struct FileDirEntity {
+    /**
+     * 
+     * @param abs_path
+     * @param file_stat Must be already containing valid, initialized data
+     */
     FileDirEntity(const string& abs_path, const struct stat& file_stat);
     FileDirEntity(string&& abs_path, const struct stat& file_stat);
+    FileDirEntity(const string& abs_path);
     FileDirEntity(string&& abs_path);
     FileDirEntity(const FileDirEntity& a);
     ~FileDirEntity();
@@ -29,7 +35,11 @@ struct FileDirEntity {
     const string& getAbsPath() const;
     ino_t getInode() const;
     size_t getSize() const;
+    const string& getSymlinkPath() const;
     bool isDir() const;
+private:
+    bool init_getSymlinkPath();
+public:
     bool isRegFile() const;
     bool isSymLink() const;
 
@@ -40,6 +50,7 @@ private:
     string abs_path_private;
     bool ok_private;
     struct stat stat_struct;
+    string symlink_path;
 };
 
 #endif /* FILEDIRENTITY_H */

@@ -20,6 +20,12 @@
       <df name="OUT">
       </df>
       <df name="src">
+        <df name="cmdOptions">
+          <in>cmdOptions.cpp</in>
+          <in>cmdOptions.h</in>
+          <in>option.cpp</in>
+          <in>option.h</in>
+        </df>
         <df name="Colors">
           <in>Colors.cpp</in>
           <in>Colors.h</in>
@@ -93,8 +99,6 @@
         <gdb_interceptlist>
           <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
         </gdb_interceptlist>
-        <gdb_signals>
-        </gdb_signals>
         <gdb_options>
           <DebugOptions>
           </DebugOptions>

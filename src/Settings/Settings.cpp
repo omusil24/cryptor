@@ -1,6 +1,9 @@
 #include "Settings.h"
 
-Settings::Settings() : CheckForUnEncryptedFiles(false),
+Settings::Settings() : 
+        ChangeFileNames(false),
+        ChangeFileNames_option_found(false),
+        CheckForUnEncryptedFiles(false),
         encrypt(false),
         EncryptAllExtensions(false),
         encrypt_or_decrypt_option_found(false),
@@ -8,6 +11,8 @@ Settings::Settings() : CheckForUnEncryptedFiles(false),
         exitcode_private(0),
         find_encrypted(false),
         no_delete(false),
+        no_threads(false),
+        printAllOptions(false),
         printHelp(false),
         printVersion(false),
         recursive(false),

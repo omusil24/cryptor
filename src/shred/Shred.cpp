@@ -119,7 +119,7 @@ bool Shred::WipeFile(const string& AbsolutePath)
         //check again in case file no longer exists
         if (fd < 0)
         {
-            ConsoleOutput::print("[Shred] " + AbsolutePath + ": No such file or directory or not a file", ConsoleOutput::ERROR);
+            ConsoleOutput::print("[Shred] " + AbsolutePath + ": No such file or not a file", ConsoleOutput::ERROR);
             return false;
         }
 

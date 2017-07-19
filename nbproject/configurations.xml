@@ -8,6 +8,10 @@
         </df>
       </df>
       <df name="src">
+        <df name="cmdOptions">
+          <in>cmdOptions.cpp</in>
+          <in>option.cpp</in>
+        </df>
         <df name="Colors">
           <in>Colors.cpp</in>
         </df>
@@ -71,73 +75,17 @@
           <buildCommand>${MAKE} -f Makefile</buildCommand>
           <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
           <executablePath>cryptor</executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>.</pElem>
+            </incDir>
+          </ccTool>
         </makeTool>
         <preBuild>
           <preBuildCommandWorkingDir>.</preBuildCommandWorkingDir>
           <preBuildCommand></preBuildCommand>
         </preBuild>
       </makefileType>
-      <folder path="0/nbproject">
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-      </folder>
-      <folder path="0/src/Colors">
-        <ccTool>
-          <incDir>
-            <pElem>src/Colors</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-      </folder>
-      <folder path="0/src/ConsoleOutput">
-        <ccTool>
-          <incDir>
-            <pElem>src/ConsoleOutput</pElem>
-            <pElem>src/Colors</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-      </folder>
-      <folder path="0/src/Crypto/CryptResult">
-        <ccTool>
-          <incDir>
-            <pElem>src/Crypto/CryptResult</pElem>
-            <pElem>/usr/include/openssl</pElem>
-            <pElem>src/FileSystem</pElem>
-            <pElem>src/Crypto</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-      </folder>
-      <folder path="0/src/FileSystem">
-        <ccTool>
-          <incDir>
-            <pElem>src/FileSystem</pElem>
-            <pElem>src/Settings</pElem>
-          </incDir>
-        </ccTool>
-      </folder>
-      <folder path="0/src/Settings">
-        <ccTool>
-          <incDir>
-            <pElem>src/Settings</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
-      </folder>
-      <folder path="0/src/shred">
-        <ccTool>
-          <incDir>
-            <pElem>src/shred</pElem>
-            <pElem>src/FileSystem</pElem>
-            <pElem>src/Settings</pElem>
-            <pElem>src</pElem>
-          </incDir>
-        </ccTool>
-      </folder>
       <item path="nbproject/private/cpp_standard_headers_indexer.cpp"
             ex="false"
             tool="1"
@@ -146,149 +94,46 @@
         </ccTool>
       </item>
       <item path="src/ArgumentPasser.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-          <incDir>
-            <pElem>src</pElem>
-            <pElem>/usr/include/openssl</pElem>
-            <pElem>src/FileSystem</pElem>
-            <pElem>src/Crypto</pElem>
-            <pElem>src/Settings</pElem>
-            <pElem>src/ConsoleOutput</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
       </item>
       <item path="src/Colors/Colors.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool flags="0">
-        </ccTool>
       </item>
       <item path="src/ConsoleOutput/ConsoleOutput.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="0">
-        </ccTool>
       </item>
       <item path="src/Core.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool>
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
       </item>
       <item path="src/Crypto/CryptResult/CryptResult.cpp"
             ex="false"
             tool="1"
             flavor2="11">
-        <ccTool flags="0">
-        </ccTool>
       </item>
       <item path="src/Crypto/Crypto.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-          <incDir>
-            <pElem>src/Crypto</pElem>
-            <pElem>/usr/include/openssl</pElem>
-            <pElem>src/FileSystem</pElem>
-            <pElem>src/Settings</pElem>
-            <pElem>src</pElem>
-            <pElem>src/shred</pElem>
-            <pElem>src/ConsoleOutput</pElem>
-            <pElem>src/Crypto/CryptResult</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
       </item>
       <item path="src/Crypto/ThreadTask.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool flags="0">
-          <incDir>
-            <pElem>src/Crypto</pElem>
-            <pElem>/usr/include/openssl</pElem>
-            <pElem>src/FileSystem</pElem>
-            <pElem>src/Crypto/CryptResult</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
       </item>
       <item path="src/FileSystem/FileDirEntity.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool flags="0">
-          <incDir>
-            <pElem>src</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
       </item>
       <item path="src/FileSystem/FileSystem.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool flags="0">
-          <incDir>
-            <pElem>src/Colors</pElem>
-            <pElem>/usr/include/openssl</pElem>
-            <pElem>src/Crypto</pElem>
-            <pElem>src/ConsoleOutput</pElem>
-            <pElem>src</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
       </item>
       <item path="src/Functions.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool flags="0">
-          <incDir>
-            <pElem>src</pElem>
-            <pElem>src/FileSystem</pElem>
-            <pElem>src/Settings</pElem>
-            <pElem>src/ConsoleOutput</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
       </item>
       <item path="src/MemoryWiper.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool flags="0">
-          <incDir>
-            <pElem>src</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
       </item>
       <item path="src/Settings/Settings.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool flags="0">
-        </ccTool>
       </item>
       <item path="src/Tester.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool flags="0">
-          <incDir>
-            <pElem>src</pElem>
-            <pElem>src/FileSystem</pElem>
-            <pElem>src/Settings</pElem>
-            <pElem>/usr/include/openssl</pElem>
-            <pElem>src/Crypto</pElem>
-            <pElem>src/ConsoleOutput</pElem>
-            <pElem>src/Crypto/CryptResult</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
+      </item>
+      <item path="src/cmdOptions/cmdOptions.cpp" ex="false" tool="1" flavor2="11">
+      </item>
+      <item path="src/cmdOptions/option.cpp" ex="false" tool="1" flavor2="11">
       </item>
       <item path="src/main.cpp" ex="false" tool="1" flavor2="8">
-        <ccTool flags="0">
-          <incDir>
-            <pElem>src</pElem>
-            <pElem>src/Settings</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
       </item>
       <item path="src/shred/BytesGenerator.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool flags="0">
-          <incDir>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
       </item>
       <item path="src/shred/Shred.cpp" ex="false" tool="1" flavor2="11">
-        <ccTool flags="0">
-          <incDir>
-            <pElem>src/ConsoleOutput</pElem>
-            <pElem>.</pElem>
-          </incDir>
-        </ccTool>
       </item>
     </conf>
   </confs>
