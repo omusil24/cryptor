@@ -61,8 +61,11 @@ Then, you can open fresh terminal and type
 $ cryptor -h
 
 [ UNINSTALL ]
+
 To uninstall, run
 
 $ cd OUT
+
 $ chmod +x *
+
 $ ./uninstall.sh
